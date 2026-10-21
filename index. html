@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IesmyContact</title>
+    <!-- FontAwesome for Social Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #0a0f1d 0%, #02040a 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        /* Perfectly Stable Top Name Box with Rotating Border Light */
+        .name-box-wrapper {
+            position: relative;
+            width: 60%;
+            padding: 3px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+            opacity: 0;
+            transform: translateY(-30px);
+            transition: all 1s ease;
+        }
+
+        .name-box-wrapper.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .name-box-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(#ff0055, #00ffff, #7b2cbf, #ffff00, #ff0055);
+            animation: rotateGlow 3s linear infinite;
+            z-index: 1;
+        }
+
+        .name-box {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            padding: 7px 12px;
+            background: #070a14;
+            border-radius: 17px;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        @keyframes rotateGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Shatter and Assemble Animation Initial State */
+        .shatter-piece {
+            opacity: 0;
+            transform: translate(var(--tx), var(--ty)) scale(0.2) rotate(var(--rot));
+            filter: blur(12px);
+            transition: all 1.3s cubic-bezier(0.15, 0.9, 0.3, 1);
+        }
+
+        .shatter-piece.assembled {
+            opacity: 1;
+            transform: translate(0, 0) scale(1) rotate(0deg);
+            filter: blur(0);
+        }
+
+        /* Giant Glowing Animated Logo */
+        .logo-wrapper {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: #070a14;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: visible;
+            margin: 10px 0;
+        }
+
+        .logo-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #ff0055, #00ffff, #7b2cbf, #ffff00, #ff0055);
+            animation: rotateGlow 3s linear infinite;
+            z-index: -1;
+            filter: blur(22px);
+            opacity: 0.95;
+        }
+
+        .logo-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #070a14;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 0 40px rgba(0, 255, 255, 0.5);
+        }
+
+        .logo-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        /* Social Media Buttons Wrapper */
+        .social-icons {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+        }
+
+        .social-btn {
+            width: 100%;
+            height: 55px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            font-size: 24px;
+            text-decoration: none;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.4s ease, filter 0.4s ease;
+        }
+
+        /* Button Gradients */
+        .social-btn.facebook { background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
+        .social-btn.email { background: linear-gradient(135deg, #b91c1c, #ef4444); }
+        .social-btn.telegram { background: linear-gradient(135deg, #0369a1, #0ea5e9); }
+        .social-btn.whatsapp { background: linear-gradient(135deg, #15803d, #22c55e); }
+
+        .social-btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(255, 255, 255, 0.3);
+            border-color: #ffffff;
+        }
+
+        /* Water Ripple / Splash Effect Styles */
+        .ripple {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: waterRipple 0.6s linear forwards;
+            pointer-events: none;
+        }
+
+        @keyframes waterRipple {
+            0% {
+                transform: scale(0);
+                opacity: 0.9;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Quick fade out and back in animation */
+        .social-btn.fade-out {
+            transform: scale(1.08);
+            opacity: 0;
+            filter: blur(5px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Stable Top Name Box -->
+        <div class="name-box-wrapper" id="nameBox">
+            <div class="name-box">
+                IesmyContact 
+            </div>
+        </div>
+
+        <!-- Giant Glowing Animated Logo with Your New ImgBB Image -->
+        <div class="logo-wrapper shatter-piece" style="--tx: -350px; --ty: -300px; --rot: -200deg;" data-delay="150">
+            <div class="logo-inner">
+                <img src="https://i.ibb.co.com/5Xh84Kbc/FB-IMG-1792611264247.jpg" alt="Profile Logo">
+            </div>
+        </div>
+
+        <!-- Social Media Buttons with Water Ripple Effect -->
+        <div class="social-icons">
+            <a href="https://www.facebook.com/profile.php?id=61595468221673" target="_blank" class="social-btn facebook shatter-piece" style="--tx: 300px; --ty: -200px; --rot: 160deg;" data-delay="300" onclick="waterSplash(event, this)">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="mailto:iesmycontact@gmail.com" class="social-btn email shatter-piece" style="--tx: -300px; --ty: 200px; --rot: -140deg;" data-delay="430" onclick="waterSplash(event, this)">
+                <i class="fas fa-envelope"></i>
+            </a>
+            <a href="https://t.me/iesmycontact" target="_blank" class="social-btn telegram shatter-piece" style="--tx: 350px; --ty: 250px; --rot: 210deg;" data-delay="560" onclick="waterSplash(event, this)">
+                <i class="fab fa-telegram-plane"></i>
+            </a>
+            <a href="https://wa.me/18722444976" target="_blank" class="social-btn whatsapp shatter-piece" style="--tx: 0px; --ty: 350px; --rot: -100deg;" data-delay="690" onclick="waterSplash(event, this)">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Page load initial shatter assemble effect
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('nameBox').classList.add('show');
+            }, 80);
+
+            const pieces = document.querySelectorAll('.shatter-piece');
+            pieces.forEach((piece) => {
+                const delay = parseInt(piece.getAttribute('data-delay')) || 100;
+                setTimeout(() => {
+                    piece.classList.add('assembled');
+                }, delay);
+            });
+        });
+
+        // Water ripple splash effect on click, opens link, and automatically restores button within 1 second
+        function waterSplash(event, element) {
+            event.preventDefault();
+            const targetUrl = element.getAttribute('href');
+            const targetBlank = element.getAttribute('target');
+
+            if (element.classList.contains('fade-out')) return;
+
+            // Create ripple effect at click coordinates
+            const rect = element.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            
+            const maxDim = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = maxDim * 2 + 'px';
+            ripple.style.marginLeft = -maxDim + 'px';
+            ripple.style.marginTop = -maxDim + 'px';
+
+            element.appendChild(ripple);
+            element.classList.add('fade-out');
+
+            // Remove ripple element after animation
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+
+            // Open link
+            setTimeout(() => {
+                if (targetBlank === '_blank') {
+                    window.open(targetUrl, '_blank');
+                } else {
+                    window.location.href = targetUrl;
+                }
+            }, 400);
+
+            // Automatically restore the button back to normal state after 1 second (1000ms)
+            setTimeout(() => {
+                element.classList.remove('fade-out');
+            }, 1000);
+        }
+
+        // Restore buttons if user returns to the page via browser history
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                document.querySelectorAll('.social-btn').forEach(btn => {
+                    btn.classList.remove('fade-out');
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
